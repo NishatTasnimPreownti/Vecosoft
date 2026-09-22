@@ -42,3 +42,33 @@ Every prompt sent to Claude Code in this session, verbatim, in the exact order s
 20. "delivery progress part too"
 21. "push and merge"
 22. The mandatory AI-prompt-history disclosure instructions (this task), ending with "qin the readme" — which produced this section.
+
+### Complete prompt history — Task 2 & Task 3 session
+
+AI tool used: **Claude Code** (Anthropic), desktop app. Prompts below are verbatim, in the exact order sent, for the session covering Task 2 and Task 3.
+
+1. "I have given you task 2, there is a folder created for task 2. do there" *(with 4 screenshots attached showing assessment general instructions, Task 2 — LRU Cache spec, and requirements)*
+2. "create a new branch then push and merge. do not add co authored by claude anywhere"
+3. "this is the task 3" *(with 1 screenshot attached showing Task 3 — Algorithm Explanation & Critical Thinking spec)*
+4. "For your submission screenshot, please run these yourself in a terminal so you have a genuine screenshot to attach (I can't capture your terminal output as an image):
+
+   ```
+   node lruCache.test.js
+   ```
+
+   ```
+   node example.js how to check
+   ```"
+5. "what else do i need" *(with 1 screenshot attached showing terminal output of running `node lruCache.test.js` and `node example.js`)*
+6. "If you use ANY AI tool during the assessment, you must submit the COMPLETE prompt history for EVERY AI tool used.
+   You must include:
+   * Every prompt, question, instruction, or request sent to AI
+   * In the exact order it was sent
+   * No omitted prompts
+   * No rewritten prompts
+   * No combined prompts
+   * No summarized prompts
+   * Prompts from every AI tool used
+
+   If possible, provide an exported/shared conversation link accessible without login. Otherwise, paste the complete prompt history into your submission.
+   give" *(with 1 screenshot attached showing the submission form with GitHub Repository and Output Screenshot fields)*
