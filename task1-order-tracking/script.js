@@ -139,7 +139,7 @@ function renderSwitcher() {
 function renderHero(scenario) {
   const hero = document.getElementById("hero");
   const h = scenario.hero;
-  hero.dataset.tone = h.tone;
+  document.getElementById("heroStub").dataset.tone = h.tone;
   hero.innerHTML = `
     <div class="hero__eyebrow">${h.eyebrow}</div>
     <div class="hero__headline">${h.headline}</div>
@@ -182,15 +182,34 @@ function renderTimeline(scenario) {
   });
 }
 
+// A row of bar widths derived from the order id, standing in for a waybill
+// barcode — decorative, but tied to this order's own id rather than random.
+function barcode(id) {
+  const bars = Array.from(id).map((ch) => 1 + (ch.charCodeAt(0) % 3));
+  let x = 0;
+  const rects = bars
+    .map((w) => {
+      const rect = `<rect x="${x}" y="0" width="${w}" height="22" />`;
+      x += w + 1.6;
+      return rect;
+    })
+    .join("");
+  return `<svg class="waybill__barcode" viewBox="0 0 ${x} 22" preserveAspectRatio="none" aria-hidden="true">${rects}</svg>`;
+}
+
 function renderOrderCard(scenario) {
   const card = document.getElementById("orderCard");
   const o = scenario.order;
   card.innerHTML = `
+    <div class="waybill__code">
+      <span class="waybill__id">${o.id}</span>
+      ${barcode(o.id)}
+    </div>
     <div class="order-card__row">
       <div class="order-card__thumb">${boxIcon}</div>
       <div class="order-card__info">
         <div class="order-card__product">${o.product}</div>
-        <div class="order-card__meta">Qty ${o.qty} &middot; Order ${o.id}</div>
+        <div class="order-card__meta">Qty ${o.qty}</div>
       </div>
     </div>
     <hr class="order-card__divider" />
@@ -234,5 +253,37 @@ function render() {
   renderOrderCard(scenario);
   renderActions(scenario);
 }
+
+// --- background theme toggle (defaults to light; ignores OS preference) ---
+const THEME_KEY = "order-tracking-theme";
+const sunIcon = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.5M12 19v2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2.5 12H5M19 12h2.5M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+const moonIcon = `<svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+
+function applyTheme(themeId) {
+  document.documentElement.dataset.theme = themeId;
+  localStorage.setItem(THEME_KEY, themeId);
+  const btn = document.getElementById("themeToggle");
+  // Icon shows the theme a click will switch *to*.
+  if (themeId === "light") {
+    btn.innerHTML = moonIcon;
+    btn.setAttribute("aria-label", "Switch to dark background");
+  } else {
+    btn.innerHTML = sunIcon;
+    btn.setAttribute("aria-label", "Switch to light background");
+  }
+}
+
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const current = document.documentElement.dataset.theme;
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+
+let savedTheme = "light";
+try {
+  savedTheme = localStorage.getItem(THEME_KEY) || "light";
+} catch (e) {
+  // localStorage unavailable (e.g. sandboxed preview) — fall back to light.
+}
+applyTheme(savedTheme);
 
 render();

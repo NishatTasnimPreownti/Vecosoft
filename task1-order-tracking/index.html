@@ -6,17 +6,20 @@
 <title>Order Tracking Screen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="demo-switcher" role="group" aria-label="Demo scenario switcher">
-    <span class="demo-switcher__label">Demo scenario</span>
-    <div class="demo-switcher__options" id="scenarioSwitcher"></div>
+  <div class="toolbar">
+    <div class="demo-switcher" role="group" aria-label="Demo scenario switcher">
+    
+      <div class="demo-switcher__options" id="scenarioSwitcher"></div>
+    </div>
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to dark background"></button>
   </div>
 
-  <main class="phone">
+  <main class="screen">
     <header class="topbar">
       <button class="iconbtn" aria-label="Back">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -27,7 +30,10 @@
       </button>
     </header>
 
-    <section class="hero" id="hero"></section>
+    <div class="hero-stub" id="heroStub">
+      <section class="hero" id="hero"></section>
+      <div class="stub-tear" aria-hidden="true"></div>
+    </div>
 
     <section class="card timeline-card" id="timelineCard">
       <h2 class="card__title">Delivery progress</h2>

@@ -16,32 +16,12 @@
   --warning-soft: #fcf0dc;
   --danger: #c4432e;
   --danger-soft: #fbe7e2;
+  --neutral: #5c7175;
   --shadow: 0 1px 2px rgba(15, 30, 28, 0.06), 0 8px 24px -12px rgba(15, 30, 28, 0.18);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e1516;
-    --surface: #16201f;
-    --surface-alt: #1c2827;
-    --text: #eaf1ef;
-    --text-muted: #94a8a5;
-    --border: #29332f;
-    --accent: #35d6ae;
-    --accent-strong: #62e6c6;
-    --accent-soft: #17332c;
-    --info: #7fabff;
-    --info-soft: #182543;
-    --success: #57cd8e;
-    --success-soft: #163224;
-    --warning: #eaad4d;
-    --warning-soft: #3b2c14;
-    --danger: #ee7b6b;
-    --danger-soft: #3c1f19;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 28px -14px rgba(0, 0, 0, 0.6);
-  }
-}
-
+/* Background is light by default regardless of OS theme; the visible
+   "Background" toggle in the toolbar is the only thing that switches it. */
 :root[data-theme="dark"] {
   --bg: #0e1516;
   --surface: #16201f;
@@ -60,6 +40,7 @@
   --warning-soft: #3b2c14;
   --danger: #ee7b6b;
   --danger-soft: #3c1f19;
+  --neutral: #7c9092;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 28px -14px rgba(0, 0, 0, 0.6);
 }
 
@@ -77,22 +58,46 @@ body {
   min-height: 100vh;
 }
 
+@media (min-width: 860px) {
+  body { padding: 40px 24px 64px; }
+}
+
 h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
 
-/* --- demo scenario switcher (evaluation aid, not part of the product UI) --- */
-.demo-switcher {
+/* --- toolbar: demo scenario switcher + background toggle (evaluation aids, not part of the product UI) --- */
+.toolbar {
   width: 100%;
   max-width: 430px;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.demo-switcher {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
   padding: 10px 12px;
   background: var(--surface-alt);
   border: 1px dashed var(--border);
   border-radius: 10px;
 }
+.theme-toggle {
+  flex-shrink: 0;
+  width: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-alt);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  cursor: pointer;
+}
+.theme-toggle svg { width: 18px; height: 18px; }
+.demo-switcher__options { min-width: 0; }
 .demo-switcher__label {
   font-size: 11px;
   font-weight: 600;
@@ -120,14 +125,39 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   color: #ffffff;
 }
 
-/* --- phone frame --- */
-.phone {
+/* --- screen: single-column card at mobile widths (360-430px target),
+   widens into a two-column layout as the viewport grows --- */
+.screen {
   width: 100%;
   max-width: 430px;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.hero-stub { display: flex; flex-direction: column; }
+
+@media (min-width: 860px) {
+  .toolbar, .screen { max-width: 920px; }
+
+  .screen {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    grid-template-areas:
+      "topbar topbar"
+      "hero   hero"
+      "timeline order"
+      "timeline actions";
+    gap: 18px 28px;
+    align-items: start;
+  }
+  .screen .topbar { grid-area: topbar; }
+  .screen .hero-stub { grid-area: hero; }
+  .screen .hero { padding: 26px 32px 24px; }
+  .screen .timeline-card { grid-area: timeline; }
+  .screen .order-card { grid-area: order; }
+  .screen .actions { grid-area: actions; }
 }
 
 .topbar {
@@ -147,21 +177,46 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   cursor: pointer;
 }
 
-/* --- hero status banner --- */
+/* --- hero-stub: the status banner reads as a torn-off waybill stamp,
+   solid-colored with a faint route-map dot field, its bottom edge
+   perforated where it "tears away" from the tracking timeline below --- */
+.hero-stub[data-tone="info"] { --tone: var(--info); }
+.hero-stub[data-tone="success"] { --tone: var(--success); }
+.hero-stub[data-tone="warning"] { --tone: var(--warning); }
+.hero-stub[data-tone="danger"] { --tone: var(--danger); }
+.hero-stub[data-tone="neutral"] { --tone: var(--neutral); }
+
 .hero {
-  border-radius: 16px;
-  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 22px 22px;
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 10px;
   color: #ffffff;
+  background-color: var(--tone);
 }
-.hero[data-tone="info"] { background: linear-gradient(155deg, var(--info), var(--accent-strong)); }
-.hero[data-tone="success"] { background: linear-gradient(155deg, var(--success), var(--accent-strong)); }
-.hero[data-tone="warning"] { background: linear-gradient(155deg, var(--warning), #8a4f12); }
-.hero[data-tone="danger"] { background: linear-gradient(155deg, var(--danger), #7d2e1e); }
-.hero[data-tone="neutral"] { background: linear-gradient(155deg, #64767a, #36474a); }
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle 1.4px, rgba(255, 255, 255, 0.4) 1.4px, transparent 1.5px);
+  background-size: 17px 17px;
+  opacity: 0.55;
+}
+.hero > * { position: relative; }
+
+.stub-tear {
+  height: 15px;
+  background-color: var(--tone);
+  background-image: radial-gradient(circle 6px, var(--bg) 6px, transparent 6.5px);
+  background-position: 11px 0;
+  background-size: 22px 15px;
+  background-repeat: repeat-x;
+  border-radius: 0 0 4px 4px;
+}
 
 .hero__eyebrow {
   font-size: 11px;
@@ -192,9 +247,8 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
 }
 .hero__eta-label { font-size: 11.5px; opacity: 0.8; }
 .hero__eta-value {
-  font-family: "IBM Plex Sans", sans-serif;
-  font-variant-numeric: tabular-nums;
-  font-size: 15px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14.5px;
   font-weight: 600;
 }
 
@@ -230,6 +284,7 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   flex-shrink: 0;
 }
 .timeline-step__dot {
+  position: relative;
   width: 22px; height: 22px;
   border-radius: 999px;
   border: 2px solid var(--border);
@@ -257,6 +312,20 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   background: var(--surface); border-color: var(--accent); color: var(--accent);
   box-shadow: 0 0 0 4px var(--accent-soft);
 }
+@media (prefers-reduced-motion: no-preference) {
+  .timeline-step[data-state="current"] .timeline-step__dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 1.5px solid var(--accent);
+    animation: pulse-ring 2.2s ease-out infinite;
+  }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.75); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
 .timeline-step[data-state="upcoming"] .timeline-step__dot { color: var(--text-muted); }
 
 .timeline-step__body { flex: 1; min-width: 0; padding-top: 1px; }
@@ -267,10 +336,10 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
 .timeline-step[data-state="done"] .timeline-step__title,
 .timeline-step[data-state="current"] .timeline-step__title { color: var(--text); }
 .timeline-step__time {
-  font-size: 12.5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
   color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 .timeline-step__note {
   margin-top: 6px;
@@ -282,8 +351,28 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   color: var(--text);
 }
 
-/* --- order summary card --- */
+/* --- order summary card, styled as a waybill stub --- */
 .order-card { display: flex; flex-direction: column; gap: 14px; }
+.waybill__code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.waybill__id {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.waybill__barcode {
+  height: 20px;
+  width: 88px;
+  flex-shrink: 0;
+  fill: var(--text);
+  opacity: 0.7;
+}
 .order-card__row {
   display: flex;
   gap: 12px;
@@ -323,10 +412,10 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   color: var(--text-muted);
 }
 .order-card__field-value {
-  font-size: 13.5px;
-  font-weight: 500;
-  margin-top: 3px;
-  font-variant-numeric: tabular-nums;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 /* --- actions --- */
@@ -344,7 +433,7 @@ h1, h2 { font-family: "Manrope", system-ui, sans-serif; margin: 0; }
   justify-content: center;
   gap: 8px;
 }
-.btn:focus-visible, .iconbtn:focus-visible, .demo-switcher__options button:focus-visible {
+.btn:focus-visible, .iconbtn:focus-visible, .theme-toggle:focus-visible, .demo-switcher__options button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
